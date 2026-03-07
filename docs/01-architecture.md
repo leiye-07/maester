@@ -1,4 +1,4 @@
-
+# 01 — Architecture
 This document will describe the architecture of the reference system.
 Topics:
 - service boundaries
@@ -6,23 +6,6 @@ Topics:
 - async ingestion pipeline
 - model gateway
 
-# 01 — Architecture
-
-## Overview
-
-Maester is a minimal **AI Reliability Toolkit** for production-minded AI APIs.
-
-It is intentionally scoped around four reliability primitives:
-
-- **Observability** — structured logs and lightweight tracing
-- **Cost Metering** — token and request cost accounting
-- **Evaluation** — basic response quality checks
-- **Execution Separation** — API path and worker path share the same reliability layer
-
-The goal is not to build a full platform.  
-The goal is to show the minimum reliability architecture an AI API should have.
-
----
 
 ## System Architecture
 *Mermaid chart*

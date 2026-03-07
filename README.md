@@ -1,7 +1,6 @@
 # Maester
-
+*The Knowledge Engine of Your Company*
 ## AI Reliability Toolkit
-
 Maester is a minimal AI infrastructure skeleton focused on **reliable AI APIs**.
 
 It demonstrates four reliability primitives:
@@ -11,28 +10,10 @@ It demonstrates four reliability primitives:
 - **Evaluation** — basic response quality checks
 - **Separation of Concerns** — API, worker, gateway, and shared packages
 
-Maester is designed as a teaching artifact and authority repo for production-minded AI systems.
-
-## Design Principles
-
-**1. Keep reliability close to the request path**
-<br>Reliability should be visible in normal application flow.
-
-**2. Separate orchestration from primitives**
-<br>apps/ orchestrates, packages/ implements.
-
-**3. Prefer inspectable abstractions**
-<br>Every layer should be understandable in one read.
-
-**4. Measure economics alongside behavior**
-<br>Cost is a first-class runtime concern for AI APIs.
-
-**5. Treat evaluation as part of runtime reliability**
-<br>A successful model call is not automatically a reliable one.
+Maester is designed as for production-minded AI systems.
 
 ## Quick Start
 ### Run API
-
 From the repo root:
 ```bash
 uvicorn apps.api.main:app --reload
