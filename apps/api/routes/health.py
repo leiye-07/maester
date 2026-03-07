@@ -6,11 +6,20 @@ Used by:
 - container orchestrators
 - uptime monitors
 """
+from __future__ import annotations
 
 from fastapi import APIRouter
 
-router = APIRouter()
+from apps.api.config import settings
+from packages.common.models import HealthStatus
 
-@router.get("/health")
-def health():
-    return {"status": "healthy"}
+router = APIRouter(tags=["system"])
+
+
+@router.get("/health", response_model=HealthStatus)
+def health() -> HealthStatus:
+    return HealthStatus(
+        status="ok",
+        service=settings.service_name,
+        environment=settings.environment,
+    )

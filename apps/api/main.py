@@ -12,14 +12,30 @@ Future extensions:
 - Rate limiting
 - Request tracing propagation
 """
+from __future__ import annotations
 
 from fastapi import FastAPI
-from apps.api.routes.health import router as health_router
 
-app = FastAPI(title="B2B AI SaaS Infra Blueprint")
+from apps.api.config import settings
+from apps.api.middleware import request_context_middleware
+from apps.api.routes.health import router as health_router
+from apps.api.routes.reliable_completion import router as reliable_completion_router
+from packages.observability.logging import configure_logging
+
+configure_logging(settings.LOG_LEVEL)
+
+app = FastAPI(
+    title="Maester API",
+    description="AI Reliability Toolkit API",
+    version="0.1.0",
+)
+
+app.middleware("http")(request_context_middleware)
 
 app.include_router(health_router)
+app.include_router(reliable_completion_router)
+
 
 @app.get("/")
-def root():
-    return {"service": "b2b-ai-saas-infra-blueprint", "status": "running"}
+def root() -> dict[str, str]:
+    return {"service": settings.service_name}
