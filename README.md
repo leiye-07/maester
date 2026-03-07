@@ -1,4 +1,4 @@
-# maester
+# Maester
 
 ## AI Reliability Toolkit
 
@@ -13,7 +13,22 @@ It demonstrates four reliability primitives:
 
 Maester is designed as a teaching artifact and authority repo for production-minded AI systems.
 
----
+## Design Principles
+
+**1. Keep reliability close to the request path**
+<br>Reliability should be visible in normal application flow.
+
+**2. Separate orchestration from primitives**
+<br>apps/ orchestrates, packages/ implements.
+
+**3. Prefer inspectable abstractions**
+<br>Every layer should be understandable in one read.
+
+**4. Measure economics alongside behavior**
+<br>Cost is a first-class runtime concern for AI APIs.
+
+**5. Treat evaluation as part of runtime reliability**
+<br>A successful model call is not automatically a reliable one.
 
 ## Quick Start
 ### Run API
