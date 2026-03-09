@@ -15,7 +15,7 @@ from __future__ import annotations
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar, Token
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Generator
 
 from packages.common.ids import new_id
@@ -73,6 +73,13 @@ class SpanResult:
     ended_at_ms: int
     duration_ms: int
     status: str
+    attributes: dict[str, Any] = field(default_factory=dict)
+
+    def set_attribute(self, key: str, value: Any) -> None:
+        self.attributes[key] = value
+
+    def set_attributes(self, **kwargs: Any) -> None:
+        self.attributes.update(kwargs)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -84,6 +91,7 @@ class SpanResult:
             "ended_at_ms": self.ended_at_ms,
             "duration_ms": self.duration_ms,
             "status": self.status,
+            "attributes": self.attributes,
         }
 
 

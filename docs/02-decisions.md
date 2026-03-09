@@ -69,3 +69,27 @@ Current checks are simple:
 The architecture allows richer evaluation later.
 
 ---
+
+## Decision 4 — Introduce a Model Gateway Layer
+
+AI systems rarely stay bound to a single provider.
+
+Over time, teams often need to support:
+
+- multiple vendors
+- model-specific routing
+- fallback behavior
+- provider experimentation
+
+Embedding provider logic directly inside route handlers creates tight coupling and makes reliability harder to manage. Therefore a Model gateway layer is introduced.
+
+**Why this matters**
+
+This decision improves:
+
+- provider portability
+- system clarity
+- fallback reliability
+- future extensibility
+
+This keeps the API layer simple while moving provider-specific behavior into infrastructure modules.

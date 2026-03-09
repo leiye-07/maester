@@ -11,27 +11,31 @@ Future:
 - Anthropic provider
 - local model provider
 """
-
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-from packages.model_gateway.meter import TokenUsage
-
-
-@dataclass(slots=True)
-class ModelResponse:
-    model: str
-    content: str
-    usage: TokenUsage
+from packages.model_gateway.base import GenerationRequest
+from packages.model_gateway.provider_anthropic import AnthropicProvider
+from packages.model_gateway.provider_openai import OpenAIProvider
+from packages.model_gateway.router import ModelRouter
 
 
 class ModelGateway:
     """
-    Demo model gateway.
+    Provider-agnostic gateway for AI model generation.
 
-    Replace with real OpenAI/Anthropic/local model adapters later.
+    Responsibilities:
+    - accept a model request
+    - route to the correct provider
+    - apply fallback when necessary
     """
+
+    def __init__(self) -> None:
+        self.router = ModelRouter(
+            providers=[
+                OpenAIProvider(),
+                AnthropicProvider(),
+            ]
+        )
 
     def generate(
         self,
@@ -39,20 +43,10 @@ class ModelGateway:
         model: str,
         prompt: str,
         max_tokens: int = 200,
-    ) -> ModelResponse:
-        response_text = (
-            f"Maester response: processed prompt '{prompt[:120]}' "
-            f"with reliability instrumentation enabled."
-        )
-
-        estimated_input_tokens = max(1, len(prompt.split()) * 2)
-        estimated_output_tokens = min(max_tokens, max(20, len(response_text.split()) * 2))
-
-        return ModelResponse(
+    ):
+        request = GenerationRequest(
             model=model,
-            content=response_text,
-            usage=TokenUsage(
-                input_tokens=estimated_input_tokens,
-                output_tokens=estimated_output_tokens,
-            ),
+            prompt=prompt,
+            max_tokens=max_tokens,
         )
+        return self.router.dispatch(request)

@@ -21,6 +21,10 @@ class WorkerSettings(BaseSettings):
     environment: str = "local"
     log_level: str = "INFO"
     default_model: str = "gpt-4.1-mini"
+    default_fallback_model: str = "gpt-4.1-mini"
+
+    openai_api_key: str | None = None
+    anthropic_api_key: str | None = None
 
     class Config:
         env_file = ".env"

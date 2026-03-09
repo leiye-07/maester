@@ -57,6 +57,8 @@ def run_demo_job(prompt: str) -> dict:
                 max_tokens=200,
             )
             sp.set_attributes(
+                provider=response.provider,
+                resolved_model=response.model,
                 input_tokens=response.usage.input_tokens,
                 output_tokens=response.usage.output_tokens,
             )

@@ -33,6 +33,8 @@ class Settings:
     REDIS_URL = os.getenv("REDIS_URL", "")
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
     DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "gtp-4.1-mini")
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    DEFAULT_FALLBACK_MODEL = os.getenv("DEFAULT_MODEL", "gtp-4.1-mini")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", None)
+    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", None)
 
 settings = Settings()
