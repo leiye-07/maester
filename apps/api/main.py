@@ -20,6 +20,7 @@ from apps.api.config import settings
 from apps.api.middleware import request_context_middleware
 from apps.api.routes.health import router as health_router
 from apps.api.routes.reliable_completion import router as reliable_completion_router
+from apps.api.routes.prompted_completion import router as prompted_completion_router
 from packages.observability.logging import configure_logging
 
 configure_logging(settings.LOG_LEVEL)
@@ -34,6 +35,7 @@ app.middleware("http")(request_context_middleware)
 
 app.include_router(health_router)
 app.include_router(reliable_completion_router)
+app.include_router(prompted_completion_router)
 
 
 @app.get("/")
