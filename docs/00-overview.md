@@ -3,8 +3,10 @@
 ## What is Maester?
 
 Maester is a minimal **AI Reliability Toolkit** designed to demonstrate the core reliability primitives needed when exposing AI models through APIs.
+  
+Maester tries to answer this question:
+> How do we operate, debug, constrain, and inspect AI APIs in production?
 
-The repository is intentionally small and educational.  
 Its purpose is to show the minimum architecture required for **production-minded AI systems**.
 
 The system focuses on four reliability primitives:
@@ -82,15 +84,23 @@ maester/
   docs/              # architecture documentation
 ```
 
-## What This Project Is Not
-Maester is not:
-- a full AI platform
-- a model hosting service
-- a monitoring product
-- a replacement for OpenTelemetry
-- a production-ready SaaS
+## What This Project Has and Doesn't Have
+Maester Has
+- in-memory/file-backed replay storage
+- simple budget policies
+- JSON/reporting summaries
+- architecture-first code
+- blog-aligned minimal demos
 
-It is a minimal reliability reference implementation.
+Maester Doesn't Have
+- real DB persistence
+- UI dashboard frontend
+- full auth
+- queue system complexity
+- distributed tracing platform
+- production-grade test harness
+
+Maester is a minimal reliability reference implementation.
 
 ## Core Idea
 AI APIs become significantly more reliable when three questions can always be answered:
