@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from packages.budgets.service import RequestBudgetGuard
 from packages.evaluation import Evaluator
 from packages.model_gateway.client import ModelGateway
 from packages.model_gateway.meter import CostMeter
@@ -15,6 +16,7 @@ from packages.replay.store import ReplayStore
 from packages.testing.runner import AITestRunner
 
 _meter = CostMeter()
+_budget_guard = RequestBudgetGuard()
 _evaluator = Evaluator()
 _model_gateway = ModelGateway()
 
@@ -37,6 +39,10 @@ _ai_test_runner = AITestRunner(
     meter=_meter,
     evaluator=_evaluator,
 )
+
+
+def get_budget_guard() -> RequestBudgetGuard:
+    return _budget_guard
 
 
 def get_cost_meter() -> CostMeter:
