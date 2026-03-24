@@ -1,16 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
 
-curl -X POST http://localhost:8000/v1/reliable_completion \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "Summarize the system health and mention healthy and passed",
-    "model": "gpt-4.1-mini",
-    "max_tokens": 150,
-    "required_terms": ["healthy", "passed"],
-    "max_response_chars": 300
-  }'
+BASE_URL="http://localhost:8000/v1/prompted_completion"
 
+echo "Scenario 1: prompted completion with explicit version"
 
-  curl -X POST http://localhost:8000/v1/prompted_completion \
+curl -s "$BASE_URL" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt_name": "system_summary",
@@ -20,20 +15,24 @@ curl -X POST http://localhost:8000/v1/reliable_completion \
     },
     "model": "gpt-4.1-mini",
     "max_tokens": 120
-  }'
+  }' | jq .
 
+echo
+echo "Scenario 2: prompted completion with default version"
 
-  curl -X POST http://localhost:8000/v1/prompted_completion \
+curl -s "$BASE_URL" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt_name": "system_summary",
     "variables": {
       "event_text": "System latency increased above 300ms for the inference service."
     }
-  }'
+  }' | jq .
 
+echo
+echo "Scenario 3: prompted completion with explicit model"
 
-curl -X POST http://localhost:8000/v1/prompted_completion \
+curl -s "$BASE_URL" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt_name": "system_summary",
@@ -42,13 +41,4 @@ curl -X POST http://localhost:8000/v1/prompted_completion \
     },
     "model": "gpt-4.1-mini",
     "max_tokens": 120
-  }'
-
-
-## replay record
-curl http://localhost:8000/v1/replays/$request_id
-
-## run replay
-curl -X POST http://localhost:8000/v1/replays/$request_id/run
-
-
+  }' | jq .
