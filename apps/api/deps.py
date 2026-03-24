@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from packages.budgets.service import RequestBudgetGuard
 from packages.evaluation import Evaluator
+from packages.metrics.service import ReliabilityMetricsService
 from packages.model_gateway.client import ModelGateway
 from packages.model_gateway.meter import CostMeter
 from packages.prompt_registry import (
@@ -40,6 +41,8 @@ _ai_test_runner = AITestRunner(
     evaluator=_evaluator,
 )
 
+_metrics_service = ReliabilityMetricsService()
+
 
 def get_budget_guard() -> RequestBudgetGuard:
     return _budget_guard
@@ -75,3 +78,7 @@ def get_replay_replayer() -> ReplayReplayer:
 
 def get_ai_test_runner() -> AITestRunner:
     return _ai_test_runner
+
+
+def get_reliability_metrics_service() -> ReliabilityMetricsService:
+    return _metrics_service

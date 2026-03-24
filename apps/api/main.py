@@ -19,6 +19,7 @@ from fastapi import FastAPI
 from apps.api.config import settings
 from apps.api.middleware import request_context_middleware
 from apps.api.routes.health import router as health_router
+from apps.api.routes.metrics import router as metrics_router
 from apps.api.routes.reliable_completion import (
     router as reliable_completion_router)
 from apps.api.routes.prompted_completion import (
@@ -40,6 +41,7 @@ app.include_router(health_router)
 app.include_router(reliable_completion_router)
 app.include_router(prompted_completion_router)
 app.include_router(replays_router)
+app.include_router(metrics_router)
 
 
 @app.get("/")
