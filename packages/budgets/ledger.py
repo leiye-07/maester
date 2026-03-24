@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any
 
+from packages.budgets.models import BudgetEventRecord
 from packages.budgets.utils import round_usd, to_decimal
 
 
@@ -24,6 +25,7 @@ class BudgetLedgerEntry:
 class InMemoryBudgetLedger:
     def __init__(self) -> None:
         self._entries: dict[str, BudgetLedgerEntry] = {}
+        self._events: list[BudgetEventRecord] = []
 
     def record(self, *,
                scope_key: str,
@@ -40,3 +42,12 @@ class InMemoryBudgetLedger:
 
     def get(self, scope_key: str) -> BudgetLedgerEntry | None:
         return self._entries.get(scope_key)
+
+    def record_event(self, event: BudgetEventRecord) -> None:
+        self._events.append(event)
+
+    def list_events(self) -> list[BudgetEventRecord]:
+        return list(self._events)
+
+    def list_events_for_scope(self, scope_key: str) -> list[BudgetEventRecord]:
+        return [event for event in self._events if event.scope_key == scope_key]

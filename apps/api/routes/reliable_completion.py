@@ -4,6 +4,7 @@ This is a Ai reliability demo
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -16,8 +17,9 @@ from apps.api.deps import (
     get_evaluator,
     get_model_gateway,
 )
-from packages.budgets.models import BudgetPolicy
+from packages.budgets.models import BudgetEventRecord, BudgetPolicy
 from packages.budgets.service import RequestBudgetGuard
+from packages.common.ids import new_id
 from packages.evaluation import EvaluationInput, Evaluator
 from packages.model_gateway.client import ModelGateway
 from packages.model_gateway.meter import CostMeter
@@ -76,6 +78,40 @@ def _build_budget_policy(payload: ReliableCompletionRequest,
     )
 
 
+def _build_budget_event(
+    *,
+    scope_key: str | None,
+    requested_model: str,
+    effective_model: str,
+    decision: str,
+    fallback_applied: bool,
+    estimate,
+    reason: str | None,
+    actual_input_tokens: int | None,
+    actual_output_tokens: int | None,
+    actual_total_tokens: int | None,
+    actual_total_cost_usd,
+) -> BudgetEventRecord:
+    return BudgetEventRecord(
+        event_id=new_id(),
+        timestamp=datetime.now(timezone.utc),
+        scope_key=scope_key,
+        requested_model=requested_model,
+        effective_model=effective_model,
+        decision=decision,
+        fallback_applied=fallback_applied,
+        estimated_input_tokens=estimate.estimated_input_tokens,
+        estimated_output_tokens=estimate.estimated_output_tokens,
+        estimated_total_tokens=estimate.estimated_total_tokens,
+        estimated_total_cost_usd=estimate.estimated_total_cost_usd,
+        actual_input_tokens=actual_input_tokens,
+        actual_output_tokens=actual_output_tokens,
+        actual_total_tokens=actual_total_tokens,
+        actual_total_cost_usd=actual_total_cost_usd,
+        reason=reason,
+    )
+
+
 @router.post("/reliable_completion", response_model=ReliableCompletionResponse)
 def reliable_completion(
     payload: ReliableCompletionRequest,
@@ -123,6 +159,21 @@ def reliable_completion(
             )
 
         if not budget_decision.allowed:
+            budget_guard.ledger.record_event(
+                _build_budget_event(
+                    scope_key=budget_policy.scope_key,
+                    requested_model=requested_model,
+                    effective_model=requested_model,
+                    decision=budget_decision.decision_type,
+                    fallback_applied=False,
+                    estimate=budget_decision.estimate,
+                    reason=budget_decision.reason,
+                    actual_input_tokens=None,
+                    actual_output_tokens=None,
+                    actual_total_tokens=None,
+                    actual_total_cost_usd=None,
+                )
+            )
             logger.info(
                 "reliable_completion_blocked_by_budget",
                 extra={
@@ -186,6 +237,21 @@ def reliable_completion(
         ledger_entry = budget_guard.record_actual_cost(
             scope_key=budget_policy.scope_key,
             actual_cost_usd=cost_record.total_cost_usd,
+        )
+        budget_guard.ledger.record_event(
+            _build_budget_event(
+                scope_key=budget_policy.scope_key,
+                requested_model=requested_model,
+                effective_model=budget_decision.effective_model,
+                decision=budget_decision.decision_type,
+                fallback_applied=budget_decision.fallback_applied,
+                estimate=budget_decision.estimate,
+                reason=budget_decision.reason,
+                actual_input_tokens=model_response.usage.input_tokens,
+                actual_output_tokens=model_response.usage.output_tokens,
+                actual_total_tokens=model_response.usage.total_tokens,
+                actual_total_cost_usd=cost_record.total_cost_usd,
+            )
         )
         budget_payload = {
             "enabled": True,

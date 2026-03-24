@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, Literal
+from pydantic import BaseModel, Field
 
 from packages.budgets.utils import round_usd
+
+BudgetDecisionType = Literal["allowed", "downgraded", "blocked"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,11 +58,45 @@ class BudgetDecision:
     fallback_applied: bool
     estimate: BudgetEstimate
 
+    @property
+    def decision_type(self) -> BudgetDecisionType:
+        if not self.allowed:
+            return "blocked"
+        if self.fallback_applied:
+            return "downgraded"
+        return "allowed"
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "allowed": self.allowed,
+            "decision": self.decision_type,
             "reason": self.reason,
             "effective_model": self.effective_model,
             "fallback_applied": self.fallback_applied,
             "estimate": self.estimate.as_dict(),
         }
+
+
+class BudgetEventRecord(BaseModel):
+    event_id: str
+    timestamp: datetime
+
+    scope_key: str | None = None
+
+    requested_model: str
+    effective_model: str
+
+    decision: BudgetDecisionType
+    fallback_applied: bool = False
+
+    estimated_input_tokens: int = 0
+    estimated_output_tokens: int = 0
+    estimated_total_tokens: int = 0
+    estimated_total_cost_usd: Decimal = Field(default=Decimal("0"))
+
+    actual_input_tokens: int | None = None
+    actual_output_tokens: int | None = None
+    actual_total_tokens: int | None = None
+    actual_total_cost_usd: Decimal | None = None
+
+    reason: str | None = None
